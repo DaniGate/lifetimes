@@ -10,6 +10,7 @@ horizon_dict = {
     88:'3mo', 89:'3mo', 90:'3mo', 91:'3mo', 92:'3mo', 93:'3mo',
     179:'6mo', 180:'6mo', 181:'6mo', 182:'6mo', 183:'6mo', 184:'6mo', 185:'6mo',
     362:'12mo', 363:'12mo', 364:'12mo', 365:'12mo', 366:'12mo', 367:'12mo', 368:'12mo',
+    727:'24mo', 728:'24mo', 729:'24mo', 730:'24mo', 731:'24mo', 732:'24mo', 733:'24mo',
 }
 
 # Current LTV model was tested with a 91 days horizon, longer term predictions
@@ -66,21 +67,27 @@ def add_predictions(rfm_data, model, horizon, testing=True, logger=None):
         Given a RFM dataframe, a LTV model and an number of periods,
         attach the following metrics: frequency, orders, gross revenue,
         as well as the current survival probability oft the customer.
-        Necessary columns in the input dataframe are: `frequency_cal`,
-        `recency_cal`, `T_cal`, `monetary_value_cal`. If column
-        `margin_cal` if also present, the estimated net revenue is also
-        computed.
-        If testing is set to true, columns `frequency_holdout`,
-        `monetary_value_holdout` should also be available, so errors
-        in estimated frequency and gross revenue can be computed. If
-        `margin_holdout` is also available, error in net revenue is also
+        Columns in the input dataframe are:
+
+        * `frequency_cal`
+        * `recency_cal`
+        * `T_cal`
+        * `monetary_value_cal`
+        * `margin_cal` (optional) if present, the estimated net revenue is also
+          computed.
+        * `testing` (optional) if set to true, columns `frequency_holdout` and
+          `monetary_value_holdout` should also be available, so errors
+          in estimated frequency and gross revenue can be computed.
+        * `frequency_holdout` (optional)
+        * `monetary_value_holdout` (optional)
+        * `margin_holdout` (optional) if available, error in net revenue is also
         computed.
     """
     if logger is None:
         logger = logging.getLogger('execution')
     logger.info("Computing LTV prediction metrics for an horizon of {} days".format(horizon))
     rfm = rfm_data.copy()
-    if horizon not in horizon_dict:
+    if horizon not in horizon_dict.keys():
         raise ValueError("Horizon value not expected: {}".format(horizon))
     horizon_str = horizon_dict[horizon]
     if horizon > int(max_horizon*1.05):
